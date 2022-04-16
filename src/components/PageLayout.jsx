@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "react-bootstrap/Navbar";
 import { AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
 import { SignInButton_Popup, SignInButton_Redirect } from "./SignInButton";
+import { SignOutButton_Popup, SignOutButton_Redirect } from "./SignOutButton";
 
 /**
  * Renders the navbar component with a sign-in button if a user is not authenticated
@@ -19,7 +20,11 @@ export const PageLayout = (props) => {
                     </span>
                 </ UnauthenticatedTemplate>
                 <AuthenticatedTemplate>
-                    <span>Signed in</span>
+                    <span style={{ "display": "flex", "justifyContent": "flex-end", "margin": "0px 10px", "width": "100%" }}>
+                        <SignOutButton_Popup />
+                        <span style={{ "width": "10px" }}></span>
+                        <SignOutButton_Redirect />
+                    </span>
                 </ AuthenticatedTemplate>
             </Navbar>
             <div style={{ "padding": "50px 25px 25px 25px" }}>
