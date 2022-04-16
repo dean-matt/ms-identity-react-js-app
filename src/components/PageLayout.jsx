@@ -5,6 +5,8 @@ import { SignInButton_Popup, SignInButton_Redirect } from "./SignInButton";
 import { SignOutButton_Popup, SignOutButton_Redirect } from "./SignOutButton";
 import { loginRequest } from "../authConfig";
 import Button from "react-bootstrap/Button";
+import { ProfileData } from "./ProfileData";
+import { callMsGraph } from "../graph";
 
 /**
  * Renders the navbar component with a sign-in button if a user is not authenticated
@@ -48,6 +50,7 @@ export const PageLayout = (props) => {
 function ProfileContent() {
     const { instance, accounts, inProgress } = useMsal();
     const [accessToken, setAccessToken] = useState(null);
+    const [graphData, setGraphData] = useState(null);
 
     const name = accounts[0] && accounts[0].name;
 
@@ -67,17 +70,38 @@ function ProfileContent() {
         });
     }
 
+    function RequestProfileData() {
+        const request = {
+            ...loginRequest,
+            account: accounts[0]
+        };
+
+        // Silently acquires an access token which is then attached to a request for Microsoft Graph data
+        instance.acquireTokenSilent(request).then((response) => {
+            callMsGraph(response.accessToken).then(response => setGraphData(response));
+        }).catch((e) => {
+            instance.acquireTokenPopup(request).then((response) => {
+                callMsGraph(response.accessToken).then(response => setGraphData(response));
+            });
+        });
+    }
+
     return (
         <div style={{ "padding": "0px 100px 25px 100px" }}>
-            <div style={{ "backgroundColor": "gray", "width": "100%", "display": "flex", "flexDirection": "column", "alignItems": "center", "padding": "10px", "borderRadius": "5px" }}>
+            <div style={{ "backgroundColor": "#444444", "width": "100%", "display": "flex", "flexDirection": "column", "rowGap": "10px", "alignItems": "center", "padding": "10px", "borderRadius": "5px" }}>
                 <h5 className="card-title" style={{ "width": "100%", "textAlign": "center", "paddingBottom": "10px", "marginBottom": "25px", "borderBottom": "1px solid #FFFFFF88" }}>
                     Welcome&nbsp;
-                    <b style={{ "color": "#33DD33" }}>{name}</b>
+                    <b style={{ "color": "#3377FF" }}>{name}</b>
                 </h5>
                 {accessToken ?
                     <p>Access Token Acquired!</p>
                     :
                     <Button variant="primary" onClick={RequestAccessToken}>Request Access Token</Button>
+                }
+                {graphData ?
+                    <ProfileData graphData={graphData} />
+                    :
+                    <Button variant="primary" onClick={RequestProfileData}>Request Profile Information</Button>
                 }
             </div>
         </div>
