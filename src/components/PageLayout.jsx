@@ -32,6 +32,12 @@ export const PageLayout = (props) => {
                     <center>Welcome to the Microsoft Authentication Library For React Tutorial</center>
                 </h5>
                 {props.children}
+                <AuthenticatedTemplate>
+                    <h3 style={{ "textAlign": "center" }}>You are signed in!</h3>
+                </AuthenticatedTemplate>
+                <UnauthenticatedTemplate>
+                    <h3 style={{ "textAlign": "center" }}>Please sign in</h3>
+                </UnauthenticatedTemplate>
             </div>
         </div>
     );
